@@ -4,11 +4,15 @@ import * as d3 from 'd3';
 class Child1 extends Component {
   constructor(props) {
     super(props)
-    this.state={};
+    this.svgRef = React.createRef();
   }
 
   componentDidMount(){
-    this.renderScatter()}
+    this.renderScatter()
+    }
+  componentDidUpdate(){
+    this.renderScatter()
+    }
 
     renderScatter(){
     const data = this.props.data1
@@ -19,9 +23,12 @@ class Child1 extends Component {
     const innerHeight = height - margin.top - margin.bottom; //y-axis
     //console.log(this.props.data1)
 
-    const svg = d3.select(".child1_svg").attr("width", width).attr("height", height);
+    const svg = d3.select(this.svgRef.current)
+    .attr("width", width)
+    .attr("height", height);
 
-    const innerChart = svg.select(".inner_chart").attr("transform", `translate(${margin.left}, ${margin.top})`);
+    const g = svg.append("g")
+    .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
     const xScale = d3.scaleLinear()
     .domain([0, d3.max(data, d => d.total_bill)])
@@ -34,25 +41,27 @@ class Child1 extends Component {
     const xAxis = d3.axisBottom(xScale);
     const yAxis = d3.axisLeft(yScale);
 
-    innerChart.selectAll(".x-axis").data([null]) // Just a placeholder for the axis, as we're not using dynamic data for it.
-      .join("g").attr('class','x-axis') //we have to assign the class we use for selection
+    g.append("g")
+      .attr('class','x-axis') //we have to assign the class we use for selection
       .attr("transform", `translate(0, ${innerHeight})`)
       .call(xAxis)
 
-    innerChart.selectAll(".y-axis").data([null]) // Similarly, just a placeholder for the axis.
-      .join("g").attr('class','y-axis') //we have to assign the class we use for selection
+    g.append("g")
+      .attr('class','y-axis') //we have to assign the class we use for selection
       .call(yAxis)
 
-      innerChart.append('text')
+    g.append('text')
       .attr("transform", "rotate(-90)")
+      .attr("class", "y-label")
       .attr("y", -30)
       .attr("x", -100)
       .style("text-anchor", "middle")
       .attr('style', 'font-weight:bold') //could probably move this to app.css
       .text("Tips");
 
-    innerChart.append('text')
+    g.append('text')
       .attr("y", innerHeight+40)
+      .attr("class", "x-label")
       .attr("x", innerWidth/2)
       .style("text-anchor", "middle")
       .attr('style', 'font-weight:bold')//could probably move this to app.css
@@ -64,7 +73,7 @@ class Child1 extends Component {
     .attr('style', 'font-weight:bold') //could probably move this to app.css
     .text("Total Bill vs. Tip")
 
-    innerChart.selectAll("circle")
+    g.selectAll("circle")
     .data(data)
     .join("circle")
     .attr("r", 3)
@@ -73,17 +82,9 @@ class Child1 extends Component {
     .attr("cy", d => yScale(d.tip));
   }
 
-  componentDidUpdate(){
-    this.renderScatter()
-  }
-
-
   render(){
-    return <svg className="child1_svg">
-        <g className="inner_chart"></g>
-    </svg>
+    return <svg ref={this.svgRef}/>;
   }
 } 
-  
 
 export default Child1;
