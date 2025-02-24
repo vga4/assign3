@@ -11,6 +11,10 @@ class Child2 extends Component {
     this.renderBar();
   }
 
+  componentDidUpdate(){
+    this.renderBar()
+  }
+  
   renderBar() {
     const data = this.props.data2;
 

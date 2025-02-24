@@ -8,6 +8,9 @@ class Child1 extends Component {
   }
 
   componentDidMount(){
+    this.renderScatter()}
+
+    renderScatter(){
     const data = this.props.data1
     const margin = { top: 40, right: 50, bottom: 50, left: 50 };
     const width = 500; // from left to right of box
@@ -67,7 +70,11 @@ class Child1 extends Component {
     .attr("r", 3)
     .attr("fill", '#69b3a2')
     .attr("cx", d => xScale(d.total_bill))
-    .attr("cy", d => yScale(d.tip))
+    .attr("cy", d => yScale(d.tip));
+  }
+
+  componentDidUpdate(){
+    this.renderScatter()
   }
 
 
